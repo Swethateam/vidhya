@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const imageSrc = "/puzzle.png";
 
@@ -9,10 +9,11 @@ export default function HeartPuzzle({ onComplete }) {
   const [placed, setPlaced] = useState({});
   const [pieceSize, setPieceSize] = useState(pieceSizeDesktop);
   const [containerSize, setContainerSize] = useState(containerSizeDesktop);
-
   const [draggingPiece, setDraggingPiece] = useState(null);
 
-  // 📱 Responsive sizes
+  const dropRefs = useRef([]);
+
+  // 📱 Responsive sizing
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -59,33 +60,37 @@ export default function HeartPuzzle({ onComplete }) {
     setDraggingPiece(pieceId);
   };
 
-  // 📱 Touch move → detect drop zone
-  const handleTouchMove = (e) => {
+  // 📱 Touch end
+  const handleTouchEnd = (e) => {
     if (draggingPiece === null) return;
 
-    const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    const touch = e.changedTouches[0];
+    const { clientX, clientY } = touch;
 
-    if (!element) return;
+    dropRefs.current.forEach((ref, index) => {
+      if (!ref) return;
+      const rect = ref.getBoundingClientRect();
 
-    const dropIndex = element.getAttribute("data-index");
-    if (dropIndex !== null) {
-      const index = Number(dropIndex);
-      if (draggingPiece === pieces[index].id) {
+      const inside =
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom;
+
+      if (inside && draggingPiece === pieces[index].id) {
         setPlaced((prev) => ({ ...prev, [index]: draggingPiece }));
-        setDraggingPiece(null);
       }
-    }
+    });
+
+    setDraggingPiece(null);
   };
 
   return (
-    <div style={styles.container} onTouchMove={handleTouchMove}>
-      <style>{glowAnimation}</style>
-
+    <div style={styles.container}>
       <h2 style={styles.title}>Fix the Heart ❤️</h2>
 
       <div style={{ ...styles.mainRow, gap: pieceSize / 3 }}>
-        {/* ❤️ Heart */}
+        {/* ❤️ Heart board */}
         <div
           style={{
             ...styles.heartWrapper,
@@ -93,14 +98,6 @@ export default function HeartPuzzle({ onComplete }) {
             height: containerSize,
           }}
         >
-          <svg width="0" height="0">
-            <defs>
-              <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.5 0.91 C0.5 0.91 0.06 0.63 0.06 0.38 C0.06 0.22 0.19 0.09 0.34 0.09 C0.44 0.09 0.5 0.16 0.5 0.16 C0.5 0.16 0.56 0.09 0.66 0.09 C0.81 0.09 0.94 0.22 0.94 0.38 C0.94 0.63 0.5 0.91 0.5 0.91 Z"/>
-              </clipPath>
-            </defs>
-          </svg>
-
           <div
             style={{
               ...styles.imageArea,
@@ -111,7 +108,7 @@ export default function HeartPuzzle({ onComplete }) {
             {pieces.map((piece, index) => (
               <div
                 key={index}
-                data-index={index}
+                ref={(el) => (dropRefs.current[index] = el)}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => handleDrop(e, index)}
                 style={{
@@ -127,32 +124,19 @@ export default function HeartPuzzle({ onComplete }) {
                 }}
               >
                 {placed[index] !== undefined && (
-                  <img
-                    src={imageSrc}
-                    alt=""
-                    draggable={false}
+                  <div
                     style={{
-                      width: pieceSize * 3,
-                      height: pieceSize * 3,
-                      transform: `translate(-${piece.x}px, -${piece.y}px)`,
+                      width: pieceSize,
+                      height: pieceSize,
+                      backgroundImage: `url(${imageSrc})`,
+                      backgroundSize: `${pieceSize * 3}px ${pieceSize * 3}px`,
+                      backgroundPosition: `-${piece.x}px -${piece.y}px`,
                     }}
                   />
                 )}
               </div>
             ))}
           </div>
-
-          <svg
-            viewBox="0 0 512 512"
-            style={{ ...styles.outline, width: containerSize, height: containerSize }}
-          >
-            <path
-              d="M256 464 C256 464 32 320 32 192 C32 112 96 48 176 48 C224 48 256 80 256 80 C256 80 288 48 336 48 C416 48 480 112 480 192 C480 320 256 464 256 464 Z"
-              fill="none"
-              stroke="#ff4d88"
-              strokeWidth="18"
-            />
-          </svg>
         </div>
 
         {/* 💌 Completion */}
@@ -183,15 +167,20 @@ export default function HeartPuzzle({ onComplete }) {
                     e.dataTransfer.setData("pieceId", piece.id)
                   }
                   onTouchStart={() => handleTouchStart(piece.id)}
-                  style={{ ...styles.pieceBox, width: pieceSize, height: pieceSize }}
+                  onTouchEnd={handleTouchEnd}
+                  style={{
+                    ...styles.pieceBox,
+                    width: pieceSize,
+                    height: pieceSize,
+                  }}
                 >
-                  <img
-                    src={imageSrc}
-                    alt=""
+                  <div
                     style={{
-                      width: pieceSize * 3,
-                      height: pieceSize * 3,
-                      transform: `translate(-${piece.x}px, -${piece.y}px)`,
+                      width: pieceSize,
+                      height: pieceSize,
+                      backgroundImage: `url(${imageSrc})`,
+                      backgroundSize: `${pieceSize * 3}px ${pieceSize * 3}px`,
+                      backgroundPosition: `-${piece.x}px -${piece.y}px`,
                     }}
                   />
                 </div>
@@ -213,21 +202,44 @@ const styles = {
     justifyContent: "center",
   },
   title: { color: "white", marginBottom: 20, fontSize: 24 },
-  mainRow: { display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center" },
+  mainRow: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
   heartWrapper: { position: "relative" },
-  imageArea: { position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", clipPath: "url(#heartClip)" },
-  outline: { position: "absolute", inset: 0, pointerEvents: "none", filter: "drop-shadow(0 0 14px #ff4d88)" },
-  loveBox: { color: "white", maxWidth: 320, textAlign: "center", marginTop: 20 },
+  imageArea: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
+  loveBox: {
+    color: "white",
+    maxWidth: 320,
+    textAlign: "center",
+    marginTop: 20,
+  },
   loveText: { fontSize: 22, marginBottom: 20 },
-  nextBtn: { padding: "10px 20px", borderRadius: 30, border: "none", background: "linear-gradient(45deg,#ff4d88,#ff99bb)" },
-  piecesRow: { marginTop: 30, display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" },
-  pieceBox: { borderRadius: 12, overflow: "hidden", background: "#000", cursor: "grab" },
+  nextBtn: {
+    padding: "10px 20px",
+    borderRadius: 30,
+    border: "none",
+    background: "linear-gradient(45deg,#ff4d88,#ff99bb)",
+    cursor: "pointer",
+  },
+  piecesRow: {
+    marginTop: 30,
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "center",
+  },
+  pieceBox: {
+    borderRadius: 12,
+    overflow: "hidden",
+    background: "#000",
+    cursor: "grab",
+  },
 };
-
-const glowAnimation = `
-@keyframes glow {
-  0% { filter: drop-shadow(0 0 6px #ff4d88); }
-  50% { filter: drop-shadow(0 0 22px #ff99bb); }
-  100% { filter: drop-shadow(0 0 6px #ff4d88); }
-}
-`;

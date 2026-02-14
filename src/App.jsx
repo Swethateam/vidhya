@@ -25,7 +25,7 @@ export default function App() {
         const audio = new Audio("/AUDIO/BG.mp3");
         audio.loop = true;
         audio.volume = 0.5;
-        audio.play();
+        audio.play().catch(() => {});
         bgAudioRef.current = audio;
       }
       setStep(1);
@@ -36,25 +36,16 @@ export default function App() {
 
   return (
     <div style={styles.container}>
-      {/* ================= HERO LOGIN ================= */}
+      {/* LOGIN */}
       {step === 0 && (
         <div style={styles.heroSection}>
-          <div style={styles.leftSection} className="fadeLeft">
-            <div style={styles.imageWrapper} className="floatImage">
-              <img
-                src="/image/first image.jpeg"
-                alt="couple"
-                style={styles.heroImage}
-              />
-            </div>
+          <div style={styles.leftSection}>
+            <img src="/image/first image.jpeg" alt="" style={styles.heroImage} />
           </div>
 
-          <div style={styles.rightSection} className="fadeRight">
-            <h1 style={styles.mainTitle} className="fadeUp delay1">
-              A Journey Written in Love
-            </h1>
-
-            <p style={styles.quote} className="typewriter">
+          <div style={styles.rightSection}>
+            <h1 style={styles.mainTitle}>A Journey Written in Love</h1>
+            <p style={styles.quote}>
               “Every love story is beautiful, but ours is my favorite.”
             </p>
 
@@ -65,14 +56,9 @@ export default function App() {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               style={styles.underlineInput}
-              className="inputFocus"
             />
 
-            <button
-              style={styles.heroButton}
-              onClick={handleLogin}
-              className="buttonHover"
-            >
+            <button style={styles.heroButton} onClick={handleLogin}>
               See Our Journey 💗
             </button>
           </div>
@@ -82,43 +68,56 @@ export default function App() {
         </div>
       )}
 
-      {/* ================= GIFT PAGE ================= */}
+      {/* GIFT PAGE */}
       {step === 1 && (
         <div style={styles.spiderPage}>
+          {/* stickers BACK */}
           <img
             src="/image/2nd.png"
             alt=""
-            style={{ ...styles.sticker, top: "90px", left: "9px", width: "180px" }}
-            className="fadeIn"
+            style={{ ...styles.sticker, top: 90, left: 9 }}
           />
 
           <img
             src="/image/1st-removebg-preview.png"
             alt=""
-            style={{ ...styles.sticker, bottom: "300px", right: "120px", width: "360px" }}
-            className="spiderSwing"
+            style={{ ...styles.sticker, bottom: 300, right: 120, width: 360 }}
           />
 
-          <div style={styles.rightText} className={animateGift ? "textExit" : ""}>
+          {/* TEXT middle */}
+          <div style={styles.rightText}>
             <div style={styles.valentine}>HAPPY VALENTINE'S DAY</div>
             <div style={styles.dear}>MY DEAR</div>
             <div style={styles.spiderman}>SPIDER MAN</div>
           </div>
 
-          <div style={styles.bigGiftWrapper} className={animateGift ? "giftCenter" : ""}>
+          {/* GIFT FRONT */}
+          <div
+            style={{
+              ...styles.bigGiftWrapper,
+              zIndex: 5,
+              transform: animateGift
+                ? "translate(-50%, -50%) scale(1.1)"
+                : "translateY(-50%)",
+            }}
+          >
             <img
               src="/image/unnamed-removebg-preview.png"
               alt="Gift"
-              style={styles.bigGiftImage}
+              style={{
+                ...styles.bigGiftImage,
+                transform: openGift ? "scale(0)" : "scale(1)",
+                transition: "transform 0.8s ease",
+              }}
               onClick={handleGiftClick}
-              className={`${!animateGift ? "bigGiftBounce" : ""} ${openGift ? "giftOpen" : ""}`}
+              className={!animateGift ? "giftBounce" : ""}
             />
             <p style={styles.clickText}>Click the Gift</p>
           </div>
         </div>
       )}
 
-      {/* ================= VIDEO ================= */}
+      {/* VIDEO */}
       {step === 2 && (
         <div style={styles.videoWrapper}>
           <video
@@ -140,57 +139,12 @@ export default function App() {
       {step === 4 && <Magazine onComplete={() => setStep(5)} />}
       {step === 5 && <LoveLetter />}
 
-      {/* ================= RESPONSIVE CSS ================= */}
       <style>{`
-        body { margin:0; }
-
-        @media (max-width: 768px) {
-          .fadeLeft, .fadeRight {
-            width:100%;
-            text-align:center;
-            align-items:center;
-          }
-
-          .bigGiftWrapper {
-            left:50% !important;
-            top:65% !important;
-            transform:translate(-50%, -50%) !important;
-          }
-
-          .rightText {
-            top:20% !important;
-            left:50% !important;
-            right:auto !important;
-            transform:translateX(-50%) !important;
-            text-align:center !important;
-          }
-
-          .bigGiftImage { width:60vw !important; max-width:260px !important; }
-
-          .valentine { font-size:22px !important; }
-          .dear { font-size:18px !important; }
-          .spiderman { font-size:28px !important; }
-
-          .sticker { width:40% !important; }
+        .giftBounce { animation: bounce 1.4s infinite; }
+        @keyframes bounce {
+          0%,100%{transform:translateY(0)}
+          50%{transform:translateY(-25px)}
         }
-
-        /* animations kept same */
-        .bigGiftBounce { animation: giftJump 1.5s infinite; }
-        @keyframes giftJump { 0%,100%{transform:translateY(0)}50%{transform:translateY(-25px)} }
-
-        .giftOpen { animation: openBox 1s forwards; }
-        @keyframes openBox {0%{transform:scale(1)}50%{transform:scale(1.3) rotate(15deg)}100%{transform:scale(0);opacity:0}}
-
-        .spiderSwing { transform-origin:top; animation:swing 3s infinite; }
-        @keyframes swing {0%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}100%{transform:rotate(-10deg)}}
-
-        .fadeIn { animation:fadeIn 2s forwards; }
-        @keyframes fadeIn {from{opacity:0}to{opacity:1}}
-
-        .textExit { animation:slideOutRight 1.5s forwards; }
-        @keyframes slideOutRight {from{opacity:1;transform:translateY(-50%) translateX(0)}to{opacity:0;transform:translateY(-50%) translateX(400px)}}
-
-        .giftCenter { left:50% !important; transform:translate(-50%,-50%) !important; }
       `}</style>
     </div>
   );
@@ -206,7 +160,7 @@ const styles = {
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
-    gap: "40px",
+    gap: 40,
     padding: "40px 20px",
     background: "linear-gradient(135deg,#2b0a3d,#9c2f6f)",
     color: "white",
@@ -214,12 +168,11 @@ const styles = {
   },
 
   leftSection: { display: "flex", justifyContent: "center" },
+  heroImage: { width: "100%", maxWidth: 320, borderRadius: 20 },
 
-  heroImage: { width: "100%", maxWidth: "320px", borderRadius: "20px" },
-
-  rightSection: { maxWidth: "500px", display: "flex", flexDirection: "column", gap: "25px" },
-
-  mainTitle: { fontSize: "48px", fontWeight: 700 },
+  rightSection: { maxWidth: 500, display: "flex", flexDirection: "column", gap: 25 },
+  mainTitle: { fontSize: 48, fontWeight: 700 },
+  quote: { opacity: 0.9 },
 
   underlineInput: {
     background: "transparent",
@@ -227,24 +180,45 @@ const styles = {
     borderBottom: "2px solid rgba(255,255,255,0.6)",
     padding: "12px 5px",
     color: "white",
-    fontSize: "18px",
+    fontSize: 18,
     outline: "none",
   },
 
   heroButton: {
-    marginTop: "20px",
-    padding: "15px",
-    borderRadius: "30px",
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 30,
     border: "none",
     background: "#ff4f81",
     color: "white",
-    fontSize: "16px",
+    fontSize: 16,
     fontWeight: "bold",
     cursor: "pointer",
   },
 
-  blur1: { position: "absolute", width: "200px", height: "200px", background: "rgba(255,120,180,0.4)", borderRadius: "50%", filter: "blur(100px)", bottom: "50px", left: "50px" },
-  blur2: { position: "absolute", width: "250px", height: "250px", background: "rgba(255,255,255,0.2)", borderRadius: "50%", filter: "blur(120px)", top: "50px", right: "80px" },
+  blur1: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+    background: "rgba(255,120,180,0.4)",
+    borderRadius: "50%",
+    filter: "blur(100px)",
+    bottom: 50,
+    left: 50,
+    pointerEvents: "none",
+  },
+
+  blur2: {
+    position: "absolute",
+    width: 250,
+    height: 250,
+    background: "rgba(255,255,255,0.2)",
+    borderRadius: "50%",
+    filter: "blur(120px)",
+    top: 50,
+    right: 80,
+    pointerEvents: "none",
+  },
 
   spiderPage: {
     width: "100vw",
@@ -253,6 +227,13 @@ const styles = {
     backgroundImage: "url('/image/Gemini_Generated_Image_9hn9g79hn9g79hn9.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
+  },
+
+  sticker: {
+    position: "absolute",
+    zIndex: 1,
+    width: 180,
+    pointerEvents: "none",
   },
 
   bigGiftWrapper: {
@@ -265,18 +246,28 @@ const styles = {
     alignItems: "center",
   },
 
-  bigGiftImage: { width: "35vw", maxWidth: "450px", minWidth: "200px", cursor: "pointer" },
+  bigGiftImage: {
+    width: "35vw",
+    maxWidth: 450,
+    minWidth: 200,
+    cursor: "pointer",
+  },
 
-  clickText: { marginTop: "20px", fontSize: "20px", color: "white", textShadow: "0 0 10px black" },
+  clickText: { marginTop: 20, fontSize: 20, color: "white", textShadow: "0 0 10px black" },
 
-  rightText: { position: "absolute", right: "10%", top: "50%", transform: "translateY(-50%)", textAlign: "right" },
+  rightText: {
+    position: "absolute",
+    right: "10%",
+    top: "50%",
+    transform: "translateY(-50%)",
+    textAlign: "right",
+    zIndex: 3,
+  },
 
-  valentine: { fontSize: "34px", fontWeight: 600 },
-  dear: { fontSize: "28px", fontStyle: "italic" },
-  spiderman: { fontSize: "48px", fontWeight: 900 },
-
-  sticker: { position: "absolute", zIndex: 1, pointerEvents: "none" },
+  valentine: { fontSize: 34, fontWeight: 600 },
+  dear: { fontSize: 28, fontStyle: "italic" },
+  spiderman: { fontSize: 48, fontWeight: 900 },
 
   videoWrapper: { display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "black" },
-  video: { width: "100%", maxWidth: "700px" },
+  video: { width: "100%", maxWidth: 700 },
 };
