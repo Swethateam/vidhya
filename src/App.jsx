@@ -68,54 +68,62 @@ export default function App() {
         </div>
       )}
 
-      {/* GIFT PAGE */}
       {step === 1 && (
-        <div style={styles.spiderPage}>
-          {/* stickers BACK */}
-          <img
-            src="/image/2nd.png"
-            alt=""
-            style={{ ...styles.sticker, top: 90, left: 9 }}
-          />
+  <div style={styles.spiderPage}>
 
-          <img
-            src="/image/1st-removebg-preview.png"
-            alt=""
-            style={{ ...styles.sticker, bottom: 300, right: 120, width: 360 }}
-          />
+    {/* Stickers */}
+    <img
+      src="/image/2nd.png"
+      alt="web"
+      style={{ ...styles.sticker, top: "90px", left: "9px", width: "180px" }}
+      className="fadeIn"
+    />
 
-          {/* TEXT middle */}
-          <div style={styles.rightText}>
-            <div style={styles.valentine}>HAPPY VALENTINE'S DAY</div>
-            <div style={styles.dear}>MY DEAR</div>
-            <div style={styles.spiderman}>SPIDER MAN</div>
-          </div>
+    <img
+      src="/image/sticker.png"
+      alt="web"
+      style={{ ...styles.sticker, bottom: "30px", right: "200px", width: "400px" }}
+      className="fadeIn"
+    />
 
-          {/* GIFT FRONT */}
-          <div
-            style={{
-              ...styles.bigGiftWrapper,
-              zIndex: 5,
-              transform: animateGift
-                ? "translate(-50%, -50%) scale(1.1)"
-                : "translateY(-50%)",
-            }}
-          >
-            <img
-              src="/image/unnamed-removebg-preview.png"
-              alt="Gift"
-              style={{
-                ...styles.bigGiftImage,
-                transform: openGift ? "scale(0)" : "scale(1)",
-                transition: "transform 0.8s ease",
-              }}
-              onClick={handleGiftClick}
-              className={!animateGift ? "giftBounce" : ""}
-            />
-            <p style={styles.clickText}>Click the Gift</p>
-          </div>
-        </div>
-      )}
+    <img
+      src="/image/1st-removebg-preview.png"
+      alt="spider"
+      style={{ ...styles.sticker, bottom: "300px", right: "120px", width: "360px" }}
+      className="spiderSwing"
+    />
+
+    {/* Right Text */}
+    <div
+      style={styles.rightText}
+      className={animateGift ? "textExit" : ""}
+    >
+      <div style={styles.valentine}>HAPPY VALENTINE'S DAY</div>
+      <div style={styles.dear}>MY DEAR</div>
+      <div style={styles.spiderman}>SPIDER MAN</div>
+    </div>
+
+    {/* Gift Wrapper */}
+    <div
+      style={styles.bigGiftWrapper}
+      className={animateGift ? "giftCenter" : ""}
+    >
+      <img
+        src="/image/unnamed-removebg-preview.png"
+        alt="Gift"
+        style={styles.bigGiftImage}
+        onClick={handleGiftClick}
+        className={`
+          ${!animateGift ? "bigGiftBounce" : ""}
+          ${openGift ? "giftOpen" : ""}
+        `}
+      />
+      <p style={styles.clickText}>Click the Gift</p>
+    </div>
+
+  </div>
+)}
+
 
       {/* VIDEO */}
       {step === 2 && (
@@ -145,6 +153,44 @@ export default function App() {
           0%,100%{transform:translateY(0)}
           50%{transform:translateY(-25px)}
         }
+          /* 🎁 initial bounce */
+.bigGiftBounce {
+  animation: bounce 1.5s infinite;
+}
+
+/* 🎁 move gift to right after click */
+.giftCenter {
+  animation: moveRight 1.2s forwards ease;
+}
+
+@keyframes moveRight {
+  0% { transform: translateY(-50%) translateX(0); }
+  100% { transform: translateY(-50%) translateX(250px); }
+}
+
+/* 🎁 small open effect */
+.giftOpen {
+  animation: giftPop 0.6s ease forwards;
+}
+
+@keyframes giftPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ✨ text disappear */
+.textExit {
+  animation: textFade 0.8s forwards ease;
+}
+
+@keyframes textFade {
+  to {
+    opacity: 0;
+    transform: translateX(80px);
+  }
+}
+
       `}</style>
     </div>
   );
@@ -257,7 +303,7 @@ const styles = {
 
   rightText: {
     position: "absolute",
-    right: "10%",
+    right: "35%",
     top: "50%",
     transform: "translateY(-50%)",
     textAlign: "right",

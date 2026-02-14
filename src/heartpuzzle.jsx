@@ -47,7 +47,6 @@ export default function HeartPuzzle({ onComplete }) {
 
   const isComplete = Object.keys(placed).length === pieces.length;
 
-  // 🖱 Desktop drop
   const handleDrop = (e, index) => {
     e.preventDefault();
     const pieceId = Number(e.dataTransfer.getData("pieceId"));
@@ -55,12 +54,10 @@ export default function HeartPuzzle({ onComplete }) {
     setPlaced((prev) => ({ ...prev, [index]: pieceId }));
   };
 
-  // 📱 Touch start
   const handleTouchStart = (pieceId) => {
     setDraggingPiece(pieceId);
   };
 
-  // 📱 Touch end
   const handleTouchEnd = (e) => {
     if (draggingPiece === null) return;
 
@@ -90,7 +87,6 @@ export default function HeartPuzzle({ onComplete }) {
       <h2 style={styles.title}>Fix the Heart ❤️</h2>
 
       <div style={{ ...styles.mainRow, gap: pieceSize / 3 }}>
-        {/* ❤️ Heart board */}
         <div
           style={{
             ...styles.heartWrapper,
@@ -98,6 +94,7 @@ export default function HeartPuzzle({ onComplete }) {
             height: containerSize,
           }}
         >
+          {/* 🧩 Puzzle board */}
           <div
             style={{
               ...styles.imageArea,
@@ -137,9 +134,31 @@ export default function HeartPuzzle({ onComplete }) {
               </div>
             ))}
           </div>
+
+          {/* ❤️ Heart outline overlay */}
+          <svg
+            viewBox="0 0 512 512"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: containerSize,
+              height: containerSize,
+              pointerEvents: "none",
+              filter: isComplete
+                ? "drop-shadow(0 0 18px #ff4d88)"
+                : "drop-shadow(0 0 8px rgba(255,77,136,0.4))",
+              transition: "0.4s",
+            }}
+          >
+            <path
+              d="M256 464 C256 464 32 320 32 192 C32 112 96 48 176 48 C224 48 256 80 256 80 C256 80 288 48 336 48 C416 48 480 112 480 192 C480 320 256 464 256 464 Z"
+              fill="none"
+              stroke="#ff4d88"
+              strokeWidth="18"
+            />
+          </svg>
         </div>
 
-        {/* 💌 Completion */}
         {isComplete && (
           <div style={styles.loveBox}>
             <h1 style={styles.loveText}>
@@ -154,7 +173,6 @@ export default function HeartPuzzle({ onComplete }) {
         )}
       </div>
 
-      {/* 🧩 Pieces */}
       {!isComplete && (
         <div style={{ ...styles.piecesRow, maxWidth: pieceSize * 3 }}>
           {pieces.map(
