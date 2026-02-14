@@ -40,3 +40,36 @@
 .read-the-docs {
   color: #888;
 }
+/* Container for all pages */
+.app-container {
+  width: 800px;
+  margin: auto;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .app-container {
+    width: 90%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .app-container {
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+/* Make images/videos responsive */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Example puzzle grid responsiveness */
+.puzzle-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 5px;
+}
